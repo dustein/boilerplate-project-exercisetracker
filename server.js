@@ -24,7 +24,7 @@ const { Schema } = mongoose
 const exercicioSchema = new Schema({
   description: String,
   duration: Number,
-  date: Date
+  date: String
 })
 
 const userSchema = new Schema({
@@ -105,15 +105,17 @@ app.post("/api/users/:_id/exercises",
 
     let takedate = req.body.date
     if(takedate){
-      date = new Date(takedate)
+      date = new Date(takedate).toDateString()
     } else {
-      date = new Date().toISOString().substring(0, 10)
+      date = new Date().toDateString()
     }
+
+    let dataFormatada = date
 
     let novoExercicio = new BancoExer({
       description: req.body.description,
       duration: req.body.duration,
-      date: date
+      date: dataFormatada
     })
 
     BancoUser.findByIdAndUpdate(
@@ -128,7 +130,7 @@ app.post("/api/users/:_id/exercises",
           resposta['username'] = atualizaUser.username
           resposta['description'] = novoExercicio.description
           resposta['duration'] = novoExercicio.duration
-          resposta['date'] = new Date(novoExercicio.date).toDateString()
+          resposta['date'] = novoExercicio.date
           resposta['_id'] = atualizaUser._id
           res.json(resposta)
         }
